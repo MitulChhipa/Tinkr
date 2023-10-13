@@ -10,7 +10,7 @@ public class SettingGrabbable : MonoBehaviour
     [SerializeField] private Transform _transform;
     [SerializeField] private Transform[] _transformChild;
 
-    private void Start()
+    private void Awake()
     {
         foreach(Transform child in _transformChild)
         {
@@ -20,6 +20,8 @@ public class SettingGrabbable : MonoBehaviour
             x.GetComponent<DistanceGrabInteractable>().enabled = true;
             x.GetComponent<DistanceHandGrabInteractable>().enabled = true;
             x.GetComponent<HandGrabInteractable>().enabled = true;
+            x.GetComponent<SnapBehavior>().SetTarget(child.GetComponent<TargetProvider>().target);
+            x.GetComponent<SnapBehavior>().SetPrefab(child.gameObject);
         }
     }
 }

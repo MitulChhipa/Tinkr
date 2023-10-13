@@ -17,62 +17,63 @@ public class PlaceHolderBehavior : MonoBehaviour
     private GhostType _type;
     [SerializeField] private Outline _outline;
 
-    public void SetMesh(int x,Mesh mesh)
-    {
-        _meshFilter.sharedMesh = mesh;
-        Material[] mats = new Material[x];
-        for (int i = 0; i < mats.Length; i++)
-        {
-            mats[i] = _greenGhostMaterial;
-        }
+    //public void SetMesh(int x,Mesh mesh)
+    //{
+    //    _meshFilter.sharedMesh = mesh;
+    //    Material[] mats = new Material[x];
+    //    for (int i = 0; i < mats.Length; i++)
+    //    {
+    //        mats[i] = _greenGhostMaterial;
+    //    }
 
-        _meshRenderer.sharedMaterials = mats;
-        _type = GhostType.GREEN;
-    }
-    public void Activate()
-    {
-        if (canAttach)
-        {
-            AttachableGhost();
-            _outline.enabled = true;
-        }
-        else
-        {
-            NotAttachableGhost();
-        }
-        _meshRenderer.enabled = true; 
-    }
-    public void Deactivate()
-    {
-        _meshRenderer.enabled = false;
-        _outline.enabled = false;
-    }
+    //    _meshRenderer.sharedMaterials = mats;
+    //    _type = GhostType.GREEN;
+    //}
 
-    public void NotAttachableGhost()
-    {
-        if(_type == GhostType.RED) { return; }
+    //public void Activate()
+    //{
+    //    if (canAttach)
+    //    {
+    //        AttachableGhost();
+    //        _outline.enabled = true;
+    //    }
+    //    else
+    //    {
+    //        NotAttachableGhost();
+    //    }
+    //    _meshRenderer.enabled = true; 
+    //}
+    //public void Deactivate()
+    //{
+    //    _meshRenderer.enabled = false;
+    //    _outline.enabled = false;
+    //}
 
-        Material[] mats = new Material[_meshRenderer.sharedMaterials.Length];
-        for (int i = 0; i < mats.Length; i++)
-        {
-            mats[i] = _redGhostMaterial;
-        }
-        _meshRenderer.sharedMaterials = mats;
-        _type = GhostType.RED;
-    }
+    //public void NotAttachableGhost()
+    //{
+    //    if(_type == GhostType.RED) { return; }
 
-    public void AttachableGhost()
-    {
-        if(_type == GhostType.GREEN) { return; }
+    //    Material[] mats = new Material[_meshRenderer.sharedMaterials.Length];
+    //    for (int i = 0; i < mats.Length; i++)
+    //    {
+    //        mats[i] = _redGhostMaterial;
+    //    }
+    //    _meshRenderer.sharedMaterials = mats;
+    //    _type = GhostType.RED;
+    //}
 
-        Material[] mats = new Material[_meshRenderer.sharedMaterials.Length];
-        for (int i = 0; i < mats.Length; i++)
-        {
-            mats[i] = _greenGhostMaterial;
-        }
-        _meshRenderer.sharedMaterials = mats;
-        _type = GhostType.GREEN;
-    }
+    //public void AttachableGhost()
+    //{
+    //    if(_type == GhostType.GREEN) { return; }
+
+    //    Material[] mats = new Material[_meshRenderer.sharedMaterials.Length];
+    //    for (int i = 0; i < mats.Length; i++)
+    //    {
+    //        mats[i] = _greenGhostMaterial;
+    //    }
+    //    _meshRenderer.sharedMaterials = mats;
+    //    _type = GhostType.GREEN;
+    //}
 }
 
 

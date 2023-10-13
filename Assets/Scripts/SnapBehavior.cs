@@ -11,7 +11,7 @@ public class SnapBehavior : MonoBehaviour
     [SerializeField] private Transform _targetTransform;                                                     //Transform where the ghost is spawned
     [SerializeField] private GameObject _emptyPrefab;                                                        //Prefab of the ghost
     [SerializeField] private SnapType _snapType;                                                             //Snap Type according to which snap is decided
-    [SerializeField] private List<PlaceHolderBehavior> _childPlaceHolder = new List<PlaceHolderBehavior>();  //Subparts list
+    [SerializeField] private PlaceHolderBehavior[] _childPlaceHolder;  //Subparts list
     
     //Part transform
     private Transform _transform;
@@ -51,6 +51,7 @@ public class SnapBehavior : MonoBehaviour
     private void Awake()
     {
         _transform = GetComponent<Transform>();
+        //_transform.GetComponent<PlaceHolderBehavior>().enabled = false;
         _distanceHandInteractable = GetComponent<DistanceHandGrabInteractable>();
         _distanceInteractable = GetComponent<DistanceGrabInteractable>();
         _handInteractable = GetComponent<HandGrabInteractable>();
@@ -58,23 +59,24 @@ public class SnapBehavior : MonoBehaviour
         _acceptableDistance = 0.03f;
         _acceptableAngle = 30f;
         _outline = GetComponent<Outline>();
-        _outline.enabled = false;
+        //_outline.enabled = false;
 
 
-        CreateGhostObjects();
+
         //Delaying the funtion to get subparts so that it dont give null reference error 
+        Invoke("CreateGhostObjects", 0.05f);
         Invoke("GetPlaceholderInThisPart", 0.1f);
         
-        PointableUnityEventWrapper pointableUnityEventWrapper = GetComponent<PointableUnityEventWrapper>();
+        //PointableUnityEventWrapper pointableUnityEventWrapper = GetComponent<PointableUnityEventWrapper>();
         
-        pointableUnityEventWrapper.WhenHover.AddListener((x) => OnHover());
-        pointableUnityEventWrapper.WhenUnhover.AddListener((x) => UnHover());
-        if (_baseBody)
-        {
-            return;
-        }
-        pointableUnityEventWrapper.WhenSelect.AddListener((x) => OnSelect());
-        pointableUnityEventWrapper.WhenUnselect.AddListener((x) => UnSelect());
+        //pointableUnityEventWrapper.WhenHover.AddListener((x) => OnHover());
+        //pointableUnityEventWrapper.WhenUnhover.AddListener((x) => UnHover());
+        //if (_baseBody)
+        //{
+        //    return;
+        //}
+        //pointableUnityEventWrapper.WhenSelect.AddListener((x) => OnSelect());
+        //pointableUnityEventWrapper.WhenUnselect.AddListener((x) => UnSelect());
     }
 
     //Instantiating ghost objects
@@ -88,15 +90,19 @@ public class SnapBehavior : MonoBehaviour
             return;
         }
         _placeholder = Instantiate(_emptyPrefab,_targetTransform.position,_targetTransform.rotation, _targetTransform.parent);
+        _placeholder.AddComponent<PlaceHolderBehavior>();
+        _placeholderBehavior = GetComponent<PlaceHolderBehavior>();
         Destroy(_targetTransform.gameObject);
 
         _placeholder.name = gameObject.name + " Ghost";
-        _placeholderTransform = _placeholder.GetComponent<Transform>();
+        //_placeholderTransform = _placeholder.GetComponent<Transform>();
         _placeholderBehavior = _placeholder.GetComponent<PlaceHolderBehavior>();
-        MeshRenderer mrThis = gameObject.GetComponent<MeshRenderer>();
-        
-        _placeholderBehavior.SetMesh(mrThis.sharedMaterials.Length, _transform.gameObject.GetComponent<MeshFilter>().mesh);
-        _placeholderBehavior.Deactivate();
+        _placeholderBehavior.enabled = true;
+        //MeshRenderer mrThis = gameObject.GetComponent<MeshRenderer>();
+
+        //_placeholderBehavior.SetMesh(mrThis.sharedMaterials.Length, _transform.gameObject.GetComponent<MeshFilter>().mesh);
+        //_placeholderBehavior.Deactivate();
+        _placeholder.SetActive(false);
     }
 
     //Checking all snap conditions using jobs
@@ -152,7 +158,8 @@ public class SnapBehavior : MonoBehaviour
         {
             return;
         }
-        _placeholderBehavior.Deactivate();
+        _placeholder.SetActive(false);
+        //_placeholderBehavior.Deactivate();
     }
 
     //Activation ghost based on subparts attached or not
@@ -162,15 +169,16 @@ public class SnapBehavior : MonoBehaviour
         {
             return;
         }
-        _placeholderBehavior.Activate();
+        _placeholder.SetActive(true);
+        //_placeholderBehavior.Activate();
     }
 
-  
+
 
     //Snapping parts
     private void Snap()
     {
-        _placeholderBehavior.Deactivate();
+        _placeholder.SetActive(false);
         _transform.SetParent(_placeholderTransform);
         _transform.localPosition = Vector3.zero;
         _transform.localRotation = Quaternion.identity;
@@ -199,13 +207,14 @@ public class SnapBehavior : MonoBehaviour
     //Caching all placeholderbehavior child
     private void GetPlaceholderInThisPart()
     {
-        foreach (Transform child in _transform)
-        {
-            if(child != null)
-            {
-                _childPlaceHolder.Add(child.GetComponent<PlaceHolderBehavior>());
-            }
-        }
+        _childPlaceHolder = GetComponentsInChildren<PlaceHolderBehavior>();
+        //foreach (Transform child in transform.GetChild(0))
+        //{
+        //    if(child != null)
+        //    {
+        //        _childPlaceHolder.Add(child.GetComponent<PlaceHolderBehavior>());
+        //    }
+        //}
     }
 
     private void ShowOutline()
@@ -273,5 +282,15 @@ public class SnapBehavior : MonoBehaviour
             HideGhost();
             SnapCheck();
         }
+    }
+
+    public void SetTarget(Transform x)
+    {
+        _targetTransform = x;
+    }
+    
+    public void SetPrefab(GameObject x)
+    {
+        _emptyPrefab = x;
     }
 }
