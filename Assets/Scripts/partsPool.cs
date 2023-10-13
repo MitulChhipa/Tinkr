@@ -6,8 +6,17 @@ public class partsPool : MonoBehaviour
 {
     [SerializeField] Transform _parentTransform;
     [SerializeField] List<SnapBehavior> _parts;
+    [SerializeField] int _attachedPartsCount;
+
+    public static partsPool instance;
+
 
     private void Awake()
+    {
+        instance = this;
+    }
+
+    private void Start()
     {
         AddObjectsToList();
     }
@@ -20,7 +29,16 @@ public class partsPool : MonoBehaviour
         }
         for(int i=0 ; i< _parts.Count; i++)
         {
-            _parts[i].id = i;
+            _parts[i].index = i;
+        }
+    }
+    
+    public void PartAttached()
+    {
+        _attachedPartsCount++;
+        if(_attachedPartsCount == _parts.Count - 1)
+        {
+            print("Won");
         }
     }
 }
