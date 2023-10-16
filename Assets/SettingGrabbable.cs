@@ -2,6 +2,7 @@ using Oculus.Interaction;
 using Oculus.Interaction.HandGrab;
 using System.Collections;
 using System.Collections.Generic;
+using System.Xml.Schema;
 using UnityEngine;
 
 public class SettingGrabbable : MonoBehaviour
@@ -22,6 +23,7 @@ public class SettingGrabbable : MonoBehaviour
             x.GetComponent<HandGrabInteractable>().enabled = true;
             x.GetComponent<SnapBehavior>().SetTarget(child.GetComponent<TargetProvider>().target);
             x.GetComponent<SnapBehavior>().SetPrefab(child.gameObject);
+            x.GetComponent<SnapBehavior>().SetOutline(child.GetComponent<Outline>());
         }
     }
 }

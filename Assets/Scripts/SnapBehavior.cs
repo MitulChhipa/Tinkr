@@ -11,7 +11,7 @@ public class SnapBehavior : MonoBehaviour
     [SerializeField] private Transform _targetTransform;                                                     //Transform where the ghost is spawned
     [SerializeField] private GameObject _emptyPrefab;                                                        //Prefab of the ghost
     [SerializeField] private SnapType _snapType;                                                             //Snap Type according to which snap is decided
-    [SerializeField] private PlaceHolderBehavior[] _childPlaceHolder;  //Subparts list
+    [SerializeField] private PlaceHolderBehavior[] _childPlaceHolder;                                        //Subparts list
     
     //Part transform
     private Transform _transform;
@@ -27,7 +27,7 @@ public class SnapBehavior : MonoBehaviour
     [SerializeField] private bool _baseBody;
     
     //Placeholder or Ghost part reference
-    private GameObject _placeholder;
+    [SerializeField]private GameObject _placeholder;
     private Transform _placeholderTransform;
     private PlaceHolderBehavior _placeholderBehavior;
 
@@ -38,7 +38,7 @@ public class SnapBehavior : MonoBehaviour
     private GrabInteractable _interactable;
     
     //Accessing outline script to enable outline on the part
-    private Outline _outline;
+    [SerializeField] private Outline _outline;
     
     //Bool for checking interation like hover and select
     private bool _hovered;
@@ -46,7 +46,7 @@ public class SnapBehavior : MonoBehaviour
     private bool _selected;
     private bool _doubleSelected;
 
-    
+
 
     private void Awake()
     {
@@ -56,27 +56,15 @@ public class SnapBehavior : MonoBehaviour
         _distanceInteractable = GetComponent<DistanceGrabInteractable>();
         _handInteractable = GetComponent<HandGrabInteractable>();
         _interactable = GetComponent<GrabInteractable>();
-        _acceptableDistance = 0.03f;
-        _acceptableAngle = 30f;
-        _outline = GetComponent<Outline>();
-        //_outline.enabled = false;
+        _acceptableDistance = 0.05f;
+        _acceptableAngle = 60f;
 
 
 
         //Delaying the funtion to get subparts so that it dont give null reference error 
         Invoke("CreateGhostObjects", 0.05f);
         Invoke("GetPlaceholderInThisPart", 0.1f);
-        
-        //PointableUnityEventWrapper pointableUnityEventWrapper = GetComponent<PointableUnityEventWrapper>();
-        
-        //pointableUnityEventWrapper.WhenHover.AddListener((x) => OnHover());
-        //pointableUnityEventWrapper.WhenUnhover.AddListener((x) => UnHover());
-        //if (_baseBody)
-        //{
-        //    return;
-        //}
-        //pointableUnityEventWrapper.WhenSelect.AddListener((x) => OnSelect());
-        //pointableUnityEventWrapper.WhenUnselect.AddListener((x) => UnSelect());
+       
     }
 
     //Instantiating ghost objects
@@ -95,23 +83,24 @@ public class SnapBehavior : MonoBehaviour
         Destroy(_targetTransform.gameObject);
 
         _placeholder.name = gameObject.name + " Ghost";
-        //_placeholderTransform = _placeholder.GetComponent<Transform>();
         _placeholderBehavior = _placeholder.GetComponent<PlaceHolderBehavior>();
         _placeholderBehavior.enabled = true;
-        //MeshRenderer mrThis = gameObject.GetComponent<MeshRenderer>();
-
-        //_placeholderBehavior.SetMesh(mrThis.sharedMaterials.Length, _transform.gameObject.GetComponent<MeshFilter>().mesh);
-        //_placeholderBehavior.Deactivate();
-        _placeholder.SetActive(false);
+        _placeholderTransform = _placeholder.GetComponent<Transform>();
+        
     }
 
     //Checking all snap conditions using jobs
     public void SnapCheck()
     {
+        if (_baseBody)
+        {
+            return;
+        }
         if (!_placeholderBehavior.canAttach)
         {
             return;
         }
+        print("Can Attach");
 
         JobHandle _jobHandle = new JobHandle();
         NativeArray<bool> _jobResult = new NativeArray<bool>(1, Allocator.Persistent);
@@ -158,8 +147,8 @@ public class SnapBehavior : MonoBehaviour
         {
             return;
         }
-        _placeholder.SetActive(false);
-        //_placeholderBehavior.Deactivate();
+        //_placeholder.SetActive(false);
+        _placeholderBehavior.Deactivate();
     }
 
     //Activation ghost based on subparts attached or not
@@ -169,8 +158,8 @@ public class SnapBehavior : MonoBehaviour
         {
             return;
         }
-        _placeholder.SetActive(true);
-        //_placeholderBehavior.Activate();
+        //_placeholder.SetActive(true);
+        _placeholderBehavior.Activate();
     }
 
 
@@ -178,7 +167,7 @@ public class SnapBehavior : MonoBehaviour
     //Snapping parts
     private void Snap()
     {
-        _placeholder.SetActive(false);
+        _placeholderBehavior.Deactivate();
         _transform.SetParent(_placeholderTransform);
         _transform.localPosition = Vector3.zero;
         _transform.localRotation = Quaternion.identity;
@@ -191,7 +180,7 @@ public class SnapBehavior : MonoBehaviour
         _distanceHandInteractable.enabled = false;
         _handInteractable.enabled = false;
         _interactable.enabled = false;
-        partsPool.instance.PartAttached();
+        //partsPool.instance.PartAttached();
         HideOutline();
     }
 
@@ -227,7 +216,7 @@ public class SnapBehavior : MonoBehaviour
         _outline.enabled = false;
     }
 
-    private void OnHover()
+    public void OnHover()
     {
         if (!_hovered)
         {
@@ -240,7 +229,7 @@ public class SnapBehavior : MonoBehaviour
         ShowOutline();
     }
 
-    private void UnHover()
+    public void UnHover()
     {
         if (_doubleHovered)
         {
@@ -292,5 +281,11 @@ public class SnapBehavior : MonoBehaviour
     public void SetPrefab(GameObject x)
     {
         _emptyPrefab = x;
+    }
+
+    public void SetOutline(Outline outline)
+    {
+        _outline = outline;
+        _outline.enabled = false;
     }
 }

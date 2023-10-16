@@ -17,6 +17,42 @@ public class PlaceHolderBehavior : MonoBehaviour
     private GhostType _type;
     [SerializeField] private Outline _outline;
 
+    [SerializeField] MeshRenderer[] _renderers;
+
+    private void Start()
+    {
+
+        Material[] mats = new Material[4];
+        for (int i = 0; i < mats.Length; i++)
+        {
+            mats[i] = _greenGhostMaterial;
+        }
+
+        _renderers = GetComponentsInChildren<MeshRenderer>();
+        foreach (MeshRenderer renderer in _renderers)
+        {
+            renderer.materials = mats;
+            renderer.enabled = false;
+        }
+        
+        _outline = GetComponent<Outline>();
+    }
+
+
+    public void Activate()
+    {
+        foreach (MeshRenderer renderer in _renderers)
+        {
+            renderer.enabled = true;
+        }
+    }
+    public void Deactivate()
+    {
+        foreach(MeshRenderer renderer in _renderers)
+        {
+            renderer.enabled = false;
+        }
+    }
     //public void SetMesh(int x,Mesh mesh)
     //{
     //    _meshFilter.sharedMesh = mesh;
